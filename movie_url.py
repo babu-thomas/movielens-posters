@@ -1,7 +1,6 @@
 import csv
 import urllib.parse
 import urllib.request
-import time
 from bs4 import BeautifulSoup
 
 row_names = ['movie_id', 'movie_title']

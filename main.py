@@ -10,9 +10,18 @@ with open('u.item.txt', 'r', encoding = "ISO-8859-1") as f:
     for row in reader:
         movie_id = row['movie_id']
         movie_title = row['movie_title']
-        url = 'http://www.imdb.com/find?q=' + urllib.parse.quote_plus(movie_title)
-        with urllib.request.urlopen(url) as response:
+        domain = 'http://www.imdb.com'
+        search_url = domain + '/find?q=' + urllib.parse.quote_plus(movie_title)
+        with urllib.request.urlopen(search_url) as response:
             html = response.read()
             soup = BeautifulSoup(html, 'html.parser')
-            print(soup.prettify())
-        time.sleep(1)
+            # Get url of 1st search result
+            try:
+                title = soup.find('table', class_='findList').tr.a['href']
+                movie_url = domain + title
+                with open('movie_url.csv', 'a', newline='') as out_csv:
+                    writer = csv.writer(out_csv, delimiter=',')
+                    writer.writerow([movie_id, movie_url])
+            # Ignore cases where search returns no results
+            except AttributeError:
+                pass

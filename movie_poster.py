@@ -13,5 +13,13 @@ with open('movie_url.csv', 'r', newline='') as in_csv:
             html = response.read()
             soup = BeautifulSoup(html, 'html.parser')
             image_url = soup.find('div', class_='poster').a.img['src']
-            print(image_url)
-        break
+            # TODO: Replace hardcoded extension with extension from string itself
+            extension = '.jpg'
+            image_url = ''.join(image_url.rpartition('@')[0:2]) + extension
+            filename = 'img/' + movie_id + extension
+            with urllib.request.urlopen(image_url) as response:
+                with open(filename, 'wb') as out_image:
+                    out_image.write(response.read())
+                with open('movie_poster.csv', 'a', newline='') as out_csv:
+                    writer = csv.writer(out_csv, delimiter=',')
+                    writer.writerow([movie_id, image_url])

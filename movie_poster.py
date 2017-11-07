@@ -12,14 +12,19 @@ with open('movie_url.csv', 'r', newline='') as in_csv:
         with urllib.request.urlopen(movie_url) as response:
             html = response.read()
             soup = BeautifulSoup(html, 'html.parser')
-            image_url = soup.find('div', class_='poster').a.img['src']
-            # TODO: Replace hardcoded extension with extension from string itself
-            extension = '.jpg'
-            image_url = ''.join(image_url.partition('_')[0]) + extension
-            filename = 'img/' + movie_id + extension
-            with urllib.request.urlopen(image_url) as response:
-                with open(filename, 'wb') as out_image:
-                    out_image.write(response.read())
-                with open('movie_poster.csv', 'a', newline='') as out_csv:
-                    writer = csv.writer(out_csv, delimiter=',')
-                    writer.writerow([movie_id, image_url])
+            # Get url of poster image
+            try:
+                image_url = soup.find('div', class_='poster').a.img['src']
+                # TODO: Replace hardcoded extension with extension from string itself
+                extension = '.jpg'
+                image_url = ''.join(image_url.partition('_')[0]) + extension
+                filename = 'img/' + movie_id + extension
+                with urllib.request.urlopen(image_url) as response:
+                    with open(filename, 'wb') as out_image:
+                        out_image.write(response.read())
+                    with open('movie_poster.csv', 'a', newline='') as out_csv:
+                        writer = csv.writer(out_csv, delimiter=',')
+                        writer.writerow([movie_id, image_url])
+            # Ignore cases where no poster image is present
+            except AttributeError:
+                pass

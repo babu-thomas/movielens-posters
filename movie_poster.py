@@ -15,7 +15,7 @@ with open('movie_url.csv', 'r', newline='') as in_csv:
             image_url = soup.find('div', class_='poster').a.img['src']
             # TODO: Replace hardcoded extension with extension from string itself
             extension = '.jpg'
-            image_url = ''.join(image_url.rpartition('@')[0:2]) + extension
+            image_url = ''.join(image_url.partition('_')[0]) + extension
             filename = 'img/' + movie_id + extension
             with urllib.request.urlopen(image_url) as response:
                 with open(filename, 'wb') as out_image:
